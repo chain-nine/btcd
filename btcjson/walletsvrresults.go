@@ -89,6 +89,21 @@ type ListReceivedByAccountResult struct {
 	Confirmations uint64  `json:"confirmations"`
 }
 
+
+type ListOmniAddressBalance struct {
+	Propertyid int `json:"propertyid"`
+	Name string `json:"name"`
+	Balance string `json:"balance"`
+	Reserved string `json:"reserved"`
+	Frozen string `json:"frozen"`
+}
+
+type OmniAddressBalance struct {
+	Balance string `json:"balance"`
+	Reserved string `json:"reserved"`
+	Frozen string `json:"frozen"`
+}
+
 // ListReceivedByAddressResult models the data from the listreceivedbyaddress
 // command.
 type ListReceivedByAddressResult struct {

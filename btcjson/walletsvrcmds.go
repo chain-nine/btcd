@@ -169,6 +169,33 @@ type GetNewAddressCmd struct {
 	Account *string
 }
 
+
+
+func NewOmniAllBalanceCmd(address string) *GetOmniAllBalanceCmd {
+	return &GetOmniAllBalanceCmd{
+		Address: address,
+	}
+}
+
+
+func NewOmniGetBalanceCmd(address string,propertyid int) *GetOmniBalanceCmd {
+	return &GetOmniBalanceCmd{
+		Address:address,
+		Propertyid:propertyid,
+	}
+}
+
+// omni_getallbalancesforaddress
+type GetOmniAllBalanceCmd struct {
+	Address string
+}
+
+// omni_getbalance
+type GetOmniBalanceCmd struct {
+	Address string
+	Propertyid int
+}
+
 // NewGetNewAddressCmd returns a new instance which can be used to issue a
 // getnewaddress JSON-RPC command.
 //
@@ -696,4 +723,6 @@ func init() {
 	MustRegisterCmd("walletlock", (*WalletLockCmd)(nil), flags)
 	MustRegisterCmd("walletpassphrase", (*WalletPassphraseCmd)(nil), flags)
 	MustRegisterCmd("walletpassphrasechange", (*WalletPassphraseChangeCmd)(nil), flags)
+	MustRegisterCmd("omni_getallbalancesforaddress", (*GetOmniAllBalanceCmd)(nil), flags)
+	MustRegisterCmd("omni_getbalance", (*GetOmniBalanceCmd)(nil), flags)
 }

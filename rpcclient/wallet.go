@@ -7,7 +7,6 @@ package rpcclient
 import (
 	"encoding/json"
 	"strconv"
-
 	"github.com/btcsuite/btcd/btcjson"
 	"github.com/btcsuite/btcd/chaincfg"
 	"github.com/btcsuite/btcd/chaincfg/chainhash"
@@ -1482,6 +1481,63 @@ func (c *Client) GetBalanceAsync(account string) FutureGetBalanceResult {
 // See GetBalanceMinConf to override the minimum number of confirmations.
 func (c *Client) GetBalance(account string) (btcutil.Amount, error) {
 	return c.GetBalanceAsync(account).Receive()
+}
+
+
+func (c *Client) GetOmniAllBalance(address string) (ret []*btcjson.ListOmniAddressBalance,err error){
+	return c.GetOmniAllBalanceAsync(address).Receive()
+}
+
+// GetBalance From omnicore json-rpc
+func (c *Client) GetOmniAllBalanceAsync(addr string) FutureGetOmniAllBalanceResult {
+	cmd := btcjson.NewOmniAllBalanceCmd(addr)
+	return c.sendCmd(cmd)
+}
+
+
+func (c *Client) GetOmniBalance(address string, propertyid int) (ret *btcjson.OmniAddressBalance,err error){
+	return c.GetOmniBalanceAsync(address,propertyid).Receive()
+}
+
+// GetBalance From omnicore json-rpc
+func (c *Client) GetOmniBalanceAsync(addr string, propertyid int) FutureGetOmniBalanceResult {
+	cmd := btcjson.NewOmniGetBalanceCmd(addr,propertyid)
+	return c.sendCmd(cmd)
+}
+
+
+type FutureGetOmniAllBalanceResult chan *response
+type FutureGetOmniBalanceResult chan *response
+func (r FutureGetOmniAllBalanceResult) Receive() (ret []*btcjson.ListOmniAddressBalance,err error) {
+	res, err := receiveFuture(r)
+	if err != nil {
+		return
+	}
+
+	// Unmarshal result as a floating point number.
+	lists := []*btcjson.ListOmniAddressBalance{}
+	err = json.Unmarshal(res, &lists)
+	if err != nil {
+		return nil, err
+	}
+
+	return lists, nil
+}
+
+func (r FutureGetOmniBalanceResult) Receive() (ret *btcjson.OmniAddressBalance,err error) {
+	res, err := receiveFuture(r)
+	if err != nil {
+		return
+	}
+
+	// Unmarshal result as a floating point number.
+	data := &btcjson.OmniAddressBalance{}
+	err = json.Unmarshal(res, data)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
 }
 
 // GetBalanceMinConfAsync returns an instance of a type that can be used to get
