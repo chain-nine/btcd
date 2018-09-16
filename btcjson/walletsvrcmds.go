@@ -725,4 +725,7 @@ func init() {
 	MustRegisterCmd("walletpassphrasechange", (*WalletPassphraseChangeCmd)(nil), flags)
 	MustRegisterCmd("omni_getallbalancesforaddress", (*GetOmniAllBalanceCmd)(nil), flags)
 	MustRegisterCmd("omni_getbalance", (*GetOmniBalanceCmd)(nil), flags)
+	MustRegisterCmd("omni_createpayload_simplesend", (*OmniCreatePayLoadCmd)(nil), flags)
+	MustRegisterCmd("omni_createrawtx_opreturn", (*OmniCreaterawtxOpreturnCmd)(nil), flags)
+	MustRegisterCmd("omni_createrawtx_reference", (*OmniCreaterawtxReferenceCmd)(nil), flags)
 }

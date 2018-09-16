@@ -74,6 +74,31 @@ func NewCreateRawTransactionCmd(inputs []TransactionInput, amounts map[string]fl
 	}
 }
 
+type OmniCreaterawtxOpreturnCmd struct {
+	Raw string
+	PayLoad string
+}
+
+func NewOmniCreaterawtxOpreturnCmd(raw,payload string) *OmniCreaterawtxOpreturnCmd {
+	return &OmniCreaterawtxOpreturnCmd{
+		raw,
+		payload,
+	}
+}
+
+
+type OmniCreaterawtxReferenceCmd struct {
+	RawTx string
+	ToAddress string
+}
+
+func NewOmniCreaterawtxReferenceCmd(rawtx,toaddress string) *OmniCreaterawtxReferenceCmd {
+	return &OmniCreaterawtxReferenceCmd{
+		rawtx,
+		toaddress,
+	}
+}
+
 // DecodeRawTransactionCmd defines the decoderawtransaction JSON-RPC command.
 type DecodeRawTransactionCmd struct {
 	HexTx string
@@ -455,6 +480,19 @@ type GetRawMempoolCmd struct {
 func NewGetRawMempoolCmd(verbose *bool) *GetRawMempoolCmd {
 	return &GetRawMempoolCmd{
 		Verbose: verbose,
+	}
+}
+
+
+type OmniCreatePayLoadCmd struct {
+	PropertyId    int
+	Amount string
+}
+
+func NewOmniCreatePayLoadCmd(property_id int, amount string) *OmniCreatePayLoadCmd {
+	return &OmniCreatePayLoadCmd{
+		property_id,
+		amount,
 	}
 }
 

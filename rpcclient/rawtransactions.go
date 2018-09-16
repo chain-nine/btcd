@@ -8,11 +8,11 @@ import (
 	"bytes"
 	"encoding/hex"
 	"encoding/json"
-
 	"github.com/btcsuite/btcd/btcjson"
 	"github.com/btcsuite/btcd/chaincfg/chainhash"
 	"github.com/btcsuite/btcd/wire"
 	"github.com/btcsuite/btcutil"
+	"fmt"
 )
 
 // SigHashType enumerates the available signature hashing types that the
@@ -89,6 +89,21 @@ func (r FutureGetRawTransactionResult) Receive() (*btcutil.Tx, error) {
 		return nil, err
 	}
 	return btcutil.NewTx(&msgTx), nil
+}
+
+type FutureOmniCreatePayLoadResult chan *response
+func (c *Client) GetOmniCreatePayLoad(property_id int, amount string) (payload string,err error) {
+	return c.omniCreatePayLoad(property_id,amount).Receive()
+}
+
+func (c *Client) omniCreatePayLoad(property_id int, amount string) FutureOmniCreatePayLoadResult {
+	cmd := btcjson.NewOmniCreatePayLoadCmd(property_id,amount)
+	return c.sendCmd(cmd)
+}
+
+func (r FutureOmniCreatePayLoadResult) Receive() (payload string, err error) {
+	res, err := receiveFuture(r)
+	return string(res),err
 }
 
 // GetRawTransactionAsync returns an instance of a type that can be used to get
@@ -206,6 +221,21 @@ type FutureCreateRawTransactionResult chan *response
 // Receive waits for the response promised by the future and returns a new
 // transaction spending the provided inputs and sending to the provided
 // addresses.
+func (r FutureCreateRawTransactionResult) ReceiveStr() (string, error) {
+	res, err := receiveFuture(r)
+	if err != nil {
+		return "", err
+	}
+
+	// Unmarshal result as a string.
+	var txHex string
+	err = json.Unmarshal(res, &txHex)
+	if err != nil {
+		return "", err
+	}
+	return txHex,nil
+}
+
 func (r FutureCreateRawTransactionResult) Receive() (*wire.MsgTx, error) {
 	res, err := receiveFuture(r)
 	if err != nil {
@@ -218,7 +248,7 @@ func (r FutureCreateRawTransactionResult) Receive() (*wire.MsgTx, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	
 	// Decode the serialized transaction hex to raw bytes.
 	serializedTx, err := hex.DecodeString(txHex)
 	if err != nil {
@@ -253,9 +283,71 @@ func (c *Client) CreateRawTransactionAsync(inputs []btcjson.TransactionInput,
 // and sending to the provided addresses.
 func (c *Client) CreateRawTransaction(inputs []btcjson.TransactionInput,
 	amounts map[btcutil.Address]btcutil.Amount, lockTime *int64) (*wire.MsgTx, error) {
-
 	return c.CreateRawTransactionAsync(inputs, amounts, lockTime).Receive()
 }
+
+func (c *Client) CreateRawTransactionString(inputs []btcjson.TransactionInput,
+	amounts map[btcutil.Address]btcutil.Amount, lockTime *int64) (string, error) {
+	return c.CreateRawTransactionAsync(inputs, amounts, lockTime).ReceiveStr()
+}
+
+type FutureOmniCreaterawtxOpreturnResult chan *response
+
+func (c *Client) OmniCreaterawtxOpreturn(raw,payload string) (string, error) {
+	return c.OmniCreaterawtxOpreturnAsync(raw,payload).ReceiveStr()
+}
+
+func (c *Client) OmniCreaterawtxOpreturnAsync(raw,payload string) FutureOmniCreaterawtxOpreturnResult {
+	cmd := btcjson.NewOmniCreaterawtxOpreturnCmd(raw,payload)
+	return c.sendCmd(cmd)
+}
+
+func (r FutureOmniCreaterawtxOpreturnResult) ReceiveStr() (string, error) {
+	res, err := receiveFuture(r)
+	fmt.Println("res:",string(res), " err:",err)
+	if err != nil {
+		return "", err
+	}
+
+	// Unmarshal result as a string.
+	var txHex string
+	err = json.Unmarshal(res, &txHex)
+	if err != nil {
+		return "", err
+	}
+
+	return txHex,nil
+}
+
+
+
+type FutureOmniCreaterawtxReferenceResult chan *response
+
+func (c *Client) OmniCreaterawtxReference(rawtx,toaddress string) (string, error) {
+	return c.omniCreaterawtxReferenceAsync(rawtx,toaddress).ReceiveStr()
+}
+
+func (c *Client) omniCreaterawtxReferenceAsync(raw,toaddress string) FutureOmniCreaterawtxReferenceResult {
+	cmd := btcjson.NewOmniCreaterawtxReferenceCmd(raw,toaddress)
+	return c.sendCmd(cmd)
+}
+
+func (r FutureOmniCreaterawtxReferenceResult) ReceiveStr() (string, error) {
+	res, err := receiveFuture(r)
+	fmt.Println("omniCreaterawtxReferenceAsync:",string(res), " err:",err)
+	if err != nil {
+		return "", err
+	}
+
+	var txHex string
+	err = json.Unmarshal(res, &txHex)
+	if err != nil {
+		return "", err
+	}
+
+	return txHex,nil
+}
+
 
 // FutureSendRawTransactionResult is a future promise to deliver the result
 // of a SendRawTransactionAsync RPC invocation (or an applicable error).
@@ -370,6 +462,15 @@ func (c *Client) SignRawTransactionAsync(tx *wire.MsgTx) FutureSignRawTransactio
 // specify that information if needed.
 func (c *Client) SignRawTransaction(tx *wire.MsgTx) (*wire.MsgTx, bool, error) {
 	return c.SignRawTransactionAsync(tx).Receive()
+}
+
+func (c *Client) SignRawTransactionOmni(tx string) (*wire.MsgTx, bool, error) {
+	return c.SignRawTransactionOmniAsync(tx).Receive()
+}
+
+func (c *Client) SignRawTransactionOmniAsync(tx string) FutureSignRawTransactionResult {
+	cmd := btcjson.NewSignRawTransactionCmd(tx, nil, nil, nil)
+	return c.sendCmd(cmd)
 }
 
 // SignRawTransaction2Async returns an instance of a type that can be used to
