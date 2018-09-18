@@ -87,6 +87,30 @@ func NewOmniCreaterawtxOpreturnCmd(raw,payload string) *OmniCreaterawtxOpreturnC
 }
 
 
+type OmniCreaterawtxChangeCmd struct {
+	RawTx string
+	Prevtxs []OmniTransactionInput
+	ToAddr string
+	Fee float64
+}
+
+type OmniTransactionInput struct {
+	Txid string `json:"txid"`
+	Vout uint32 `json:"vout"`
+	ScriptPubKey string `json:"scriptPubKey"`
+	Value float64 `json:"value"`
+}
+
+func NewOmniCreaterawtxChangeCmd(rawtx string,prevtxs []OmniTransactionInput,to_addr string,fee float64) *OmniCreaterawtxChangeCmd {
+	return &OmniCreaterawtxChangeCmd{
+		rawtx,
+		prevtxs,
+		to_addr,
+		fee,
+	}
+}
+
+
 type OmniCreaterawtxReferenceCmd struct {
 	RawTx string
 	ToAddress string

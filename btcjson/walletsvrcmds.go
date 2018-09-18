@@ -507,6 +507,25 @@ type SendFromCmd struct {
 	CommentTo   *string
 }
 
+type OmniFundedSendCmd struct {
+	From string
+	To string
+	PropertyId int
+	Amount  string
+	FeeAddr string
+}
+
+
+func NewOmniFundedSend(from,to,fee_addr string,propertyid int, amount string) *OmniFundedSendCmd {
+	return &OmniFundedSendCmd{
+		from,
+		to,
+		propertyid,
+		amount,
+		fee_addr,
+	}
+}
+
 // NewSendFromCmd returns a new instance which can be used to issue a sendfrom
 // JSON-RPC command.
 //
@@ -728,4 +747,6 @@ func init() {
 	MustRegisterCmd("omni_createpayload_simplesend", (*OmniCreatePayLoadCmd)(nil), flags)
 	MustRegisterCmd("omni_createrawtx_opreturn", (*OmniCreaterawtxOpreturnCmd)(nil), flags)
 	MustRegisterCmd("omni_createrawtx_reference", (*OmniCreaterawtxReferenceCmd)(nil), flags)
+	MustRegisterCmd("omni_funded_send", (*OmniFundedSendCmd)(nil), flags)
+	MustRegisterCmd("omni_createrawtx_change", (*OmniCreaterawtxChangeCmd)(nil), flags)
 }

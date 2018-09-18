@@ -12,6 +12,7 @@ import (
 	"github.com/btcsuite/btcd/chaincfg/chainhash"
 	"github.com/btcsuite/btcd/wire"
 	"github.com/btcsuite/btcutil"
+	"fmt"
 )
 
 // *****************************
@@ -565,6 +566,38 @@ func (c *Client) SendFromAsync(fromAccount string, toAddress btcutil.Address, am
 func (c *Client) SendFrom(fromAccount string, toAddress btcutil.Address, amount btcutil.Amount) (*chainhash.Hash, error) {
 	return c.SendFromAsync(fromAccount, toAddress, amount).Receive()
 }
+
+func (c *Client) OmniFundedSend(from,to,fee_addr string,propertyid int, amount float64) (string, error) {
+	fmt.Println("from==>",from)
+	fmt.Println("to===>",to)
+	fmt.Println("property==>",propertyid)
+	fmt.Println("amount==>",amount)
+	fmt.Println("fee_addr==>",fee_addr)
+	return c.OmniFundedSendAsync(from, to,fee_addr,propertyid, amount).Receive()
+}
+
+func (c *Client) OmniFundedSendAsync(from,to,fee_addr string,propertyid int, amount float64) OmniFundedSendResult {
+	amount_str := fmt.Sprintf("%v",amount)
+	cmd := btcjson.NewOmniFundedSend(from,to,fee_addr,propertyid,amount_str)
+	return c.sendCmd(cmd)
+}
+
+type OmniFundedSendResult chan *response
+
+// Receive waits for the response promised by the future and returns the hash
+// of the transaction sending amount to the given address using the provided
+// account as a source of funds.
+func (r OmniFundedSendResult) Receive() (string, error) {
+	res, err := receiveFuture(r)
+	if err != nil {
+		return "", err
+	}
+
+	var txHash string
+	err = json.Unmarshal(res, &txHash)
+	return txHash,err
+}
+
 
 // SendFromMinConfAsync returns an instance of a type that can be used to get
 // the result of the RPC at some future time by invoking the Receive function on

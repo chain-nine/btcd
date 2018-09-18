@@ -304,7 +304,7 @@ func (c *Client) OmniCreaterawtxOpreturnAsync(raw,payload string) FutureOmniCrea
 
 func (r FutureOmniCreaterawtxOpreturnResult) ReceiveStr() (string, error) {
 	res, err := receiveFuture(r)
-	fmt.Println("res:",string(res), " err:",err)
+	fmt.Println("FutureOmniCreaterawtxOpreturnResult res:",string(res), " err:",err)
 	if err != nil {
 		return "", err
 	}
@@ -320,6 +320,31 @@ func (r FutureOmniCreaterawtxOpreturnResult) ReceiveStr() (string, error) {
 }
 
 
+type FutureOmniCreaterawtxChangeResult chan *response
+func (c *Client) OmniCreaterawtxChange(rawtx string,prevtxs []btcjson.OmniTransactionInput,to_addr string,fee float64) (string, error) {
+	return c.OmniCreaterawtxChangeAsync(rawtx,prevtxs,to_addr,fee).ReceiveStr()
+}
+func (c *Client) OmniCreaterawtxChangeAsync(rawtx string,prevtxs []btcjson.OmniTransactionInput,to_addr string,fee float64) FutureOmniCreaterawtxChangeResult {
+	cmd := btcjson.NewOmniCreaterawtxChangeCmd(rawtx,prevtxs,to_addr,fee)
+	return c.sendCmd(cmd)
+}
+
+func (r FutureOmniCreaterawtxChangeResult) ReceiveStr() (string, error) {
+	res, err := receiveFuture(r)
+	fmt.Println("create_tx_change_res:",string(res), " err:",err)
+	if err != nil {
+		return "", err
+	}
+
+	// Unmarshal result as a string.
+	var txHex string
+	err = json.Unmarshal(res, &txHex)
+	if err != nil {
+		return "", err
+	}
+
+	return txHex,nil
+}
 
 type FutureOmniCreaterawtxReferenceResult chan *response
 
