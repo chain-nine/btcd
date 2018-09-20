@@ -74,6 +74,18 @@ func NewCreateRawTransactionCmd(inputs []TransactionInput, amounts map[string]fl
 	}
 }
 
+type CreateOmniRawTransactionCmd struct {
+	Inputs   []OmniTransactionInput
+	Amounts  map[string]float64
+}
+
+func NewCreateOmniRawTransactionCmd(inputs []OmniTransactionInput) *CreateOmniRawTransactionCmd {
+	return &CreateOmniRawTransactionCmd{
+		Inputs:   inputs,
+		Amounts:  map[string]float64{},
+	}
+}
+
 type OmniCreaterawtxOpreturnCmd struct {
 	Raw string
 	PayLoad string
@@ -97,8 +109,8 @@ type OmniCreaterawtxChangeCmd struct {
 type OmniTransactionInput struct {
 	Txid string `json:"txid"`
 	Vout uint32 `json:"vout"`
-	ScriptPubKey string `json:"scriptPubKey"`
 	Value float64 `json:"value"`
+	ScriptPubKey string `json:"scriptPubKey"`
 }
 
 func NewOmniCreaterawtxChangeCmd(rawtx string,prevtxs []OmniTransactionInput,to_addr string,fee float64) *OmniCreaterawtxChangeCmd {

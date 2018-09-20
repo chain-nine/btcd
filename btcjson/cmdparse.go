@@ -31,6 +31,16 @@ func makeParams(rt reflect.Type, rv reflect.Value) []interface{} {
 	return params
 }
 
+func MarshalCmdSpecify(id interface{},method string,cmd interface{}) ([]byte, error) {
+	rt := reflect.TypeOf(cmd)
+	rv := reflect.ValueOf(cmd)
+	params := makeParams(rt.Elem(), rv.Elem())
+	rawCmd, err := NewRequest(id, method, params)
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(rawCmd)
+}
 // MarshalCmd marshals the passed command to a JSON-RPC request byte slice that
 // is suitable for transmission to an RPC server.  The provided command type
 // must be a registered type.  All commands provided by this package are
@@ -63,6 +73,7 @@ func MarshalCmd(id interface{}, cmd interface{}) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	
 	return json.Marshal(rawCmd)
 }
 

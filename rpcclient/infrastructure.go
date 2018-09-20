@@ -861,6 +861,29 @@ func (c *Client) sendRequest(jReq *jsonRequest) {
 	c.sendMessage(jReq.marshalledJSON)
 }
 
+
+func (c *Client) sendByApiName(method string,cmd interface{}) chan *response {
+	// Marshal the command.
+	id := c.NextID()
+	marshalledJSON, err := btcjson.MarshalCmdSpecify(id,method,cmd)
+	if err != nil {
+		return newFutureError(err)
+	}
+
+	// Generate the request and send it along with a channel to respond on.
+	responseChan := make(chan *response, 1)
+	jReq := &jsonRequest{
+		id:             id,
+		method:         method,
+		cmd:            cmd,
+		marshalledJSON: marshalledJSON,
+		responseChan:   responseChan,
+	}
+	c.sendRequest(jReq)
+
+	return responseChan
+}
+
 // sendCmd sends the passed command to the associated server and returns a
 // response channel on which the reply will be delivered at some point in the
 // future.  It handles both websocket and HTTP POST mode depending on the

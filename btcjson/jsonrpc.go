@@ -7,6 +7,7 @@ package btcjson
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 )
 
 // RPCErrorCode represents an error code to be used as a part of an RPCError
@@ -90,6 +91,12 @@ func NewRequest(id interface{}, method string, params []interface{}) (*Request, 
 	rawParams := make([]json.RawMessage, 0, len(params))
 	for _, param := range params {
 		marshalledParam, err := json.Marshal(param)
+		str_mar := string(marshalledParam)
+		if strings.Contains(str_mar, "\\\"") {
+			end := strings.Replace(str_mar,"\\\"","",-1)
+			marshalledParam = []byte(end)
+		}
+
 		if err != nil {
 			return nil, err
 		}
