@@ -67,7 +67,22 @@ func (c *Client) GetTransaction(txHash *chainhash.Hash) (*btcjson.GetTransaction
 // ListTransactionsAsync, ListTransactionsCountAsync, or
 // ListTransactionsCountFromAsync RPC invocation (or an applicable error).
 type FutureListTransactionsResult chan *response
+type FutureOmniListTransactionsResult chan *response
+func (r FutureOmniListTransactionsResult) Receive() ([]btcjson.ListOmniTransactionsResult, error) {
+	res, err := receiveFuture(r)
+	if err != nil {
+		return nil, err
+	}
 
+	// Unmarshal result as an array of listtransaction result objects.
+	var transactions []btcjson.ListOmniTransactionsResult
+	err = json.Unmarshal(res, &transactions)
+	if err != nil {
+		return nil, err
+	}
+
+	return transactions, nil
+}
 // Receive waits for the response promised by the future and returns a list of
 // the most recent transactions.
 func (r FutureListTransactionsResult) Receive() ([]btcjson.ListTransactionsResult, error) {
@@ -96,12 +111,21 @@ func (c *Client) ListTransactionsAsync(account string) FutureListTransactionsRes
 	return c.sendCmd(cmd)
 }
 
+func (c *Client) ListOmniTransactionsAsync(addr string) FutureOmniListTransactionsResult {
+	cmd := btcjson.NewOmniListTransactionsCmd(addr)
+	return c.sendCmd(cmd)
+}
+
 // ListTransactions returns a list of the most recent transactions.
 //
 // See the ListTransactionsCount and ListTransactionsCountFrom to control the
 // number of transactions returned and starting point, respectively.
 func (c *Client) ListTransactions(account string) ([]btcjson.ListTransactionsResult, error) {
 	return c.ListTransactionsAsync(account).Receive()
+}
+
+func (c *Client) ListOmniTransactions(addr string) ([]btcjson.ListOmniTransactionsResult, error) {
+	return c.ListOmniTransactionsAsync(addr).Receive()
 }
 
 // ListTransactionsCountAsync returns an instance of a type that can be used to

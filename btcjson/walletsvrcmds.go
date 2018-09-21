@@ -424,6 +424,10 @@ type ListTransactionsCmd struct {
 	IncludeWatchOnly *bool `jsonrpcdefault:"false"`
 }
 
+type OmniListTransactionsCmd struct {
+	Addr    string
+}
+
 // NewListTransactionsCmd returns a new instance which can be used to issue a
 // listtransactions JSON-RPC command.
 //
@@ -435,6 +439,12 @@ func NewListTransactionsCmd(account *string, count, from *int, includeWatchOnly 
 		Count:            count,
 		From:             from,
 		IncludeWatchOnly: includeWatchOnly,
+	}
+}
+
+func NewOmniListTransactionsCmd(addr string) *OmniListTransactionsCmd {
+	return &OmniListTransactionsCmd{
+		addr,
 	}
 }
 
@@ -749,4 +759,5 @@ func init() {
 	MustRegisterCmd("omni_createrawtx_reference", (*OmniCreaterawtxReferenceCmd)(nil), flags)
 	MustRegisterCmd("omni_funded_send", (*OmniFundedSendCmd)(nil), flags)
 	MustRegisterCmd("omni_createrawtx_change", (*OmniCreaterawtxChangeCmd)(nil), flags)
+	MustRegisterCmd("omni_listtransactions", (*OmniListTransactionsCmd)(nil), flags)
 }

@@ -81,6 +81,26 @@ type ListTransactionsResult struct {
 	OtherAccount      string   `json:"otheraccount,omitempty"`
 }
 
+type ListOmniTransactionsResult struct {
+	TxId         		string     `json:"txid"`
+	Fee           		string   `json:"fee"`
+	SendingAddress  	string   `json:"sendingaddress"`
+	ReferenceAddress    string  `json:"referenceaddress"`
+	IsMine 				bool   `json:"ismine"`
+	Version         	int   `json:"version"`
+	TypeInt        		int `json:"type_int"`
+	Type         		string  `json:"type"`
+	PropertyId          int   	`json:"propertyid"`
+	Divisible     		string  `json:"divisible"`
+	Amount              string  `json:"amount"`
+	Valid         		bool    `json:"valid"`
+	Blockhash 		  	string  `json:"blockhash"`
+	BlocktimeTime       int64   `json:"blocktime"`
+	PositioninBlock     int64   `json:"positioninblock"`
+	Block           	int64    `json:"block"`
+	Confirmations       int   	`json:"confirmations"`
+}
+
 // ListReceivedByAccountResult models the data from the listreceivedbyaccount
 // command.
 type ListReceivedByAccountResult struct {
