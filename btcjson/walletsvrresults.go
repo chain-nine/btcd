@@ -91,7 +91,7 @@ type ListOmniTransactionsResult struct {
 	TypeInt        		int `json:"type_int"`
 	Type         		string  `json:"type"`
 	PropertyId          int   	`json:"propertyid"`
-	Divisible     		string  `json:"divisible"`
+	Divisible     		bool  `json:"divisible"`
 	Amount              string  `json:"amount"`
 	Valid         		bool    `json:"valid"`
 	Blockhash 		  	string  `json:"blockhash"`
